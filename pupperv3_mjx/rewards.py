@@ -160,24 +160,33 @@ def reward_geom_collision(pipeline_state: base.State, geom_ids: np.array) -> jax
 def reward_front_contact_penalty(front_contact: jax.Array) -> jax.Array:
     """
     Penalize undesired front leg contact.
-    Currently a stub: returns 0. Safe for JAX scan.
+    front_contact: shape (4,), [FR, FL, BR, BL] as 0/1 or bool.
+    Return a scalar.
     """
-    return -front_contact.astype(jp.float32)
-
-
-
-def reward_com_over_rear(com_pos: jax.Array, rear_pos: jax.Array) -> jax.Array:
-    """
-    Penalize center-of-mass being too far over rear legs.
-    Currently a stub: returns 0. Safe for JAX scan.
-    """
-    error = com_pos[0] - rear_pos[0]   # x orientation
-    return -jp.maximum(error, 0.0)
+    front = front_contact[:2].astype(jp.float32) # front legs
+    return -jp.mean(front)
 
 
 def reward_rear_contact(rear_contact: jax.Array) -> jax.Array:
     """
-    Penalize or reward rear leg contact.
-    Currently a stub: returns 0. Safe for JAX scan.
+    Reward rear leg contact.
+    rear_contact: shape (4,)
+    Return a scalar.
     """
-    return rear_contact.astype(jp.float32)
+    rear = rear_contact[2:].astype(jp.float32)     # rear legs
+    return jp.mean(rear)
+
+
+def reward_com_over_rear(com_pos: jax.Array, rear_pos: jax.Array) -> jax.Array:
+    """
+    Encourage COM to stay above rear legs.
+    com_pos: shape (3,)
+    rear_pos: shape (4,3)
+    Return a scalar.
+    """
+    rear_x = rear_pos[2:, 0].mean()   
+    com_x = com_pos[0]                
+
+    error = jp.abs(com_x - rear_x)
+    return -error
+
