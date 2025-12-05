@@ -154,3 +154,28 @@ def reward_geom_collision(pipeline_state: base.State, geom_ids: np.array) -> jax
             * (pipeline_state.contact.dist < 0.0)
         )
     return jp.clip(contact, -1000.0, 1000.0)
+
+# ---------------- NEW STUB REWARDS (for standing project) ----------------
+
+def reward_front_contact_penalty(front_contact: jax.Array) -> jax.Array:
+    """
+    Penalize undesired front leg contact.
+    Currently a stub: returns 0. Safe for JAX scan.
+    """
+    return jp.array(0.0)
+
+
+def reward_com_over_rear(com_pos: jax.Array, rear_pos: jax.Array) -> jax.Array:
+    """
+    Penalize center-of-mass being too far over rear legs.
+    Currently a stub: returns 0. Safe for JAX scan.
+    """
+    return jp.array(0.0)
+
+
+def reward_rear_contact(rear_contact: jax.Array) -> jax.Array:
+    """
+    Penalize or reward rear leg contact.
+    Currently a stub: returns 0. Safe for JAX scan.
+    """
+    return jp.array(0.0)

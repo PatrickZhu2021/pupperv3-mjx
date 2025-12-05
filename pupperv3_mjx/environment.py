@@ -479,7 +479,19 @@ class PupperV3Env(PipelineEnv):
             "knee_collision": rewards.reward_geom_collision(
                 pipeline_state, self._upper_leg_geom_ids
             ),
-            "body_collision": rewards.reward_geom_collision(pipeline_state, self._torso_geom_ids),
+            "body_collision": rewards.reward_geom_collision(
+                pipeline_state, self._torso_geom_ids
+            ),
+            "front_contact_penalty": rewards.reward_front_contact_penalty(
+                first_contact
+            ),
+            "com_over_rear": rewards.reward_com_over_rear(
+                pipeline_state.xpos[0], 
+                pipeline_state.xpos[self._lower_leg_body_id]
+            ),
+            "rear_contact": rewards.reward_rear_contact(
+                first_contact
+            ),
         }
         rewards_dict = {
             k: v * self._reward_config.rewards.scales[k] for k, v in rewards_dict.items()
