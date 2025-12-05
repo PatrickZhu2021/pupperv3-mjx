@@ -162,7 +162,8 @@ def reward_front_contact_penalty(front_contact: jax.Array) -> jax.Array:
     Penalize undesired front leg contact.
     Currently a stub: returns 0. Safe for JAX scan.
     """
-    return jp.array(0.0)
+    return -front_contact.astype(jp.float32)
+
 
 
 def reward_com_over_rear(com_pos: jax.Array, rear_pos: jax.Array) -> jax.Array:
@@ -170,7 +171,8 @@ def reward_com_over_rear(com_pos: jax.Array, rear_pos: jax.Array) -> jax.Array:
     Penalize center-of-mass being too far over rear legs.
     Currently a stub: returns 0. Safe for JAX scan.
     """
-    return jp.array(0.0)
+    error = com_pos[0] - rear_pos[0]   # x orientation
+    return -jp.maximum(error, 0.0)
 
 
 def reward_rear_contact(rear_contact: jax.Array) -> jax.Array:
@@ -178,4 +180,4 @@ def reward_rear_contact(rear_contact: jax.Array) -> jax.Array:
     Penalize or reward rear leg contact.
     Currently a stub: returns 0. Safe for JAX scan.
     """
-    return jp.array(0.0)
+    return rear_contact.astype(jp.float32)
