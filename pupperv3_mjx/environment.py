@@ -483,14 +483,20 @@ class PupperV3Env(PipelineEnv):
                 pipeline_state, self._torso_geom_ids
             ),
             "front_contact_penalty": rewards.reward_front_contact_penalty(
-                first_contact
+                contact
             ),
             "com_over_rear": rewards.reward_com_over_rear(
                 pipeline_state.xpos[0], 
                 pipeline_state.xpos[self._lower_leg_body_id]
             ),
             "rear_contact": rewards.reward_rear_contact(
-                first_contact
+                contact
+            ),
+            "base_height": rewards.reward_base_height(
+                pipeline_state.x.pos[self._torso_idx - 1, 2]
+            ),
+            "rear_leg_extension": rewards.reward_rear_leg_extension(
+                joint_angles
             ),
         }
         rewards_dict = {

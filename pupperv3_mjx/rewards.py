@@ -164,7 +164,7 @@ def reward_front_contact_penalty(front_contact: jax.Array) -> jax.Array:
     Return a scalar.
     """
     front = front_contact[:2].astype(jp.float32) # front legs
-    return -jp.mean(front)
+    return jp.mean(front) # positive as rewards, negative on reward config
 
 
 def reward_rear_contact(rear_contact: jax.Array) -> jax.Array:
@@ -190,3 +190,33 @@ def reward_com_over_rear(com_pos: jax.Array, rear_pos: jax.Array) -> jax.Array:
     error = jp.abs(com_x - rear_x)
     return -error
 
+def reward_base_height(
+    torso_z: jax.Array,
+    z_target: float = 0.28,
+    z_tolerance: float = 0.03,
+) -> jax.Array:
+    """
+    torso_z: current z
+    z_target: desired standing height
+    z_tolerance
+    """
+    error = jp.abs(torso_z - z_target)
+    rew = jp.exp(-error / (z_tolerance + EPS))
+    return jp.clip(rew, -1000.0, 1000.0)
+
+
+def reward_rear_leg_extension(
+    joint_angles: jax.Array,
+    target_rear_knees: jax.Array = jp.array([-0.3, 0.3]),
+    sigma: float = 0.2,
+) -> jax.Array:
+    """
+    courages larger ankle angles 
+    """
+    # ankle：FR, FL, BR, BL
+    all_knees = joint_angles[2::3]          # shape (4,)
+    rear_knees = all_knees[2:]              # rear legs，shape (2,)
+
+    error = jp.sum(jp.square(rear_knees - target_rear_knees))
+    rew = jp.exp(-error / (sigma + EPS))
+    return jp.clip(rew, -1000.0, 1000.0)
