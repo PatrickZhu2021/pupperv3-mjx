@@ -169,7 +169,12 @@ class PupperV3Env(PipelineEnv):
         sys = mjcf.load(path)
         self._dt = environment_timestep  # this environment is 50 fps
         sys = sys.tree_replace({"opt.timestep": physics_timestep})
-
+        torque_scale = 1.5  # +50% torque
+        if hasattr(sys, "actuator_forcerange"):
+            sys = sys.replace(
+                actuator_forcerange=sys.actuator_forcerange * torque_scale
+            )
+            print("[INFO] Scaled actuator_forcerange by", torque_scale)
         # override menagerie params for smoother policy
         sys = sys.replace(
             # dof_damping=sys.dof_damping.at[6:].set(DOF_DAMPING),
@@ -620,3 +625,8 @@ class PupperV3Env(PipelineEnv):
     ) -> Sequence[np.ndarray]:
         camera = camera or "track"
         return super().render(trajectory, camera=camera)
+
+print("Has actuator_forcerange:", hasattr(sys, "actuator_forcerange"))
+print("Has actuator_ctrlrange:", hasattr(sys, "actuator_ctrlrange"))
+print("Has actuator_gainprm:", hasattr(sys, "actuator_gainprm"))
+print("Has actuator_biasprm:", hasattr(sys, "actuator_biasprm"))
