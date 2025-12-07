@@ -625,8 +625,3 @@ class PupperV3Env(PipelineEnv):
     ) -> Sequence[np.ndarray]:
         camera = camera or "track"
         return super().render(trajectory, camera=camera)
-
-print("Has actuator_forcerange:", hasattr(sys, "actuator_forcerange"))
-print("Has actuator_ctrlrange:", hasattr(sys, "actuator_ctrlrange"))
-print("Has actuator_gainprm:", hasattr(sys, "actuator_gainprm"))
-print("Has actuator_biasprm:", hasattr(sys, "actuator_biasprm"))
