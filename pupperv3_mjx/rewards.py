@@ -207,7 +207,7 @@ def reward_base_height(
 
 def reward_rear_leg_extension(
     joint_angles: jax.Array,
-    target_rear_knees: jax.Array = jp.array([-0.52, 0.52]),
+    target_rear_knees: jax.Array = jp.array([-1.0, 1.0]),
     sigma: float = 0.2,
 ) -> jax.Array:
     """
